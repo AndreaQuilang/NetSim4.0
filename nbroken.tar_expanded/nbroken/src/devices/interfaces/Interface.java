@@ -24,6 +24,7 @@ public class Interface implements Serializable {
     public final static String DOWN = "down";
     public final static String ADMINISTRATIVELY_DOWN = "administratively down";
     private String name;
+    protected int cost;
     private Device device;
     private String consoleName;
     private Interface connectedInterface;
@@ -36,10 +37,11 @@ public class Interface implements Serializable {
     private IPAccessList IPAccessListIn;
     private IPAccessList IPAccessListOut;
 
-    public Interface(Device device, String name, String consoleName) {
+    public Interface(Device device, String name, String consoleName, Integer cost) {
         this.device = device;
         this.name = name;
         this.consoleName = consoleName;
+        this.cost = cost;
     }
 
     public void setIPAccessListIn(IPAccessList accessList) {
