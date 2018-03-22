@@ -13,9 +13,13 @@ public class Serial extends Interface {
 
     public Serial(Device device, String name, String consoleName) {
         super(device, name, consoleName);
+        this.setDefaultCost();
     }
 
     public String getDescription() {
         return description;
+    }
+    public void setDefaultCost() {
+    	this.cost = 200;
     }
 }

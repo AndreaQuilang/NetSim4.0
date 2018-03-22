@@ -1,5 +1,6 @@
 package devices.routers.routingtable;
 
+import devices.addresses.Area;
 import devices.addresses.IPAddress;
 import devices.addresses.SubnetMask;
 
@@ -24,6 +25,7 @@ public class Entry implements Serializable {
     private Interface routerInterface;
     private String connectionType = "";
     private int hopCount;
+    private Area areaId;
 
     public Entry(String destinationNetwork, String mask, String nextHopAddress, int hopCount) {
         this.destinationNetwork = new IPAddress(destinationNetwork);
@@ -35,7 +37,7 @@ public class Entry implements Serializable {
     public int getHopCount() {
         return hopCount;
     }
-
+    
     public void setConnectionType(String connectionType) {
         this.connectionType = connectionType;
     }
@@ -71,4 +73,10 @@ public class Entry implements Serializable {
     public IPAddress getNextHopAddress() {
         return nextHopAddress;
     }
+    
+    public Area getArea() {
+        return areaId;
+    }
+    
+ 
 }
