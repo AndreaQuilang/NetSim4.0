@@ -1,7 +1,7 @@
 package devices.routers;
 
 import devices.Device;
-
+import devices.addresses.Area;
 import devices.addresses.IPAddress;
 import devices.addresses.SubnetMask;
 
@@ -113,8 +113,8 @@ public class Router extends Device implements ActionListener {
                 Entry[] entries = table.getEntries();
 
                 for (int j = 0; j < entries.length; j++) {
-                    if (IPAddress.getNetworkAddress(new IPAddress(networks[i]), new SubnetMask(IPAddress.getClassfulSubnet(networks[i]))).equals(IPAddress.getNetworkAddress(entries[j].getDestinationNetwork(), new SubnetMask(IPAddress.getClassfulSubnet(networks[i]))))) {
-                        igrpNetwork(entries[j].getDestinationNetwork().toString(), entries[j].getMask().toString());
+                    if (IPAddress.getNetworkAddress(new IPAddress(networks[i]), new SubnetMask(IPAddress.getClassfulSubnet(networks[i])), new Area(Area.getArea(networks[i]))).equals(IPAddress.getNetworkAddress(entries[j].getDestinationNetwork(), new SubnetMask(IPAddress.getClassfulSubnet(networks[i])), new Area(Area.getArea(networks[i]))))) {
+                        ospfNetwork(entries[j].getDestinationNetwork().toString(), entries[j].getMask().toString(),entries[j].getArea().toString());
                     }
                 }
             }
@@ -221,18 +221,18 @@ public class Router extends Device implements ActionListener {
         }
     }
     
-    public void ospfNetwork(String network, String mask) {
+    public void ospfNetwork(String network, String mask, String areaId) {
         Router router = this;
         Interface[] interfaces = router.getInterfaces();
 
         for (int i = 0; i < interfaces.length; i++) {
             if (interfaces[i].getState().equals(Interface.UP)) {
-                propagateOSPFNetwork(interfaces[i], network, mask, 0);
+                propagateOSPFNetwork(interfaces[i], network, mask, 0, areaId);
             }
         }
     }
 
-    public void propagateOSPFNetwork(Interface deviceInterface, String network, String mask, int hopCount) {
+    public void propagateOSPFNetwork(Interface deviceInterface, String network, String mask, int hopCount, String areaId) {
         String deviceNetworkAddress = IPAddress.getNetworkAddress(deviceInterface.getIPAddress(), deviceInterface.getSubnetMask());
         Interface connectedInterface = deviceInterface.getConnectedInterface();
 
@@ -267,7 +267,7 @@ public class Router extends Device implements ActionListener {
                                                     j < routerInterfaces.length;
                                                     j++) {
                                                 if (!routerInterfaces[j].equals(otherInterface) && routerInterfaces[j].getState().equals(Interface.UP)) {
-                                                    propagateOSPFNetwork(routerInterfaces[j], network, mask, hopCount + 1);
+                                                    propagateOSPFNetwork(routerInterfaces[j], network, mask, hopCount + 1, areaId);
                                                 }
                                             }
                                         }
@@ -294,7 +294,7 @@ public class Router extends Device implements ActionListener {
 
                             for (int j = 0; j < routerInterfaces.length; j++) {
                                 if (!routerInterfaces[j].equals(connectedInterface) && routerInterfaces[j].getState().equals(Interface.UP)) {
-                                    propagateOSPFNetwork(routerInterfaces[j], network, mask, hopCount + 1);
+                                    propagateOSPFNetwork(routerInterfaces[j], network, mask, hopCount + 1, areaId);
                                 }
                             }
                         }

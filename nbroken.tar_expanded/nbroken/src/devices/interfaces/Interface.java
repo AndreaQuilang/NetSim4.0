@@ -37,14 +37,14 @@ public class Interface implements Serializable {
     private IPAccessList IPAccessListIn;
     private IPAccessList IPAccessListOut;
 
-    public Interface(Device device, String name, String consoleName, Integer cost) {
+    public Interface(Device device, String name, String consoleName) {
         this.device = device;
         this.name = name;
         this.consoleName = consoleName;
-        this.cost = cost;
+        this.cost = 0;
     }
 
-    public void setIPAccessListIn(IPAccessList accessList) {
+	public void setIPAccessListIn(IPAccessList accessList) {
         this.IPAccessListIn = accessList;
     }
 
@@ -143,7 +143,11 @@ public class Interface implements Serializable {
     public String getState() {
         return state;
     }
-
+    
+    public int getCost() {
+        return cost;
+    }
+    
     public void setProtocolStatus(String status) {
         this.protocolStatus = status;
     }

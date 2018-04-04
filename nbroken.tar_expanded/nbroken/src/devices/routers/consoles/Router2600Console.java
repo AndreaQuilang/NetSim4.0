@@ -22,6 +22,7 @@ import devices.routers.consoles.commands.RouterCommand;
 import devices.routers.consoles.commands.UserCommand;
 
 import devices.routers.routingprotocols.IGRP;
+import devices.routers.routingprotocols.OSPF;
 import devices.routers.routingprotocols.RoutingProtocol;
 
 import devices.routers.routingtable.Entry;
@@ -3551,6 +3552,42 @@ public class Router2600Console extends RouterConsole {
                                             IGRP igrp = router2600.getIGRP();
                                             igrp.setASNumber(Integer.parseInt(arg2.toString()));
                                             router2600.setCurrentRoutingProtocol(router2600.getIGRP());
+                                            router2600.startUpdateTimer();
+                                        }
+                                    } else {
+                                        showInvalidInputError(cursorPosition);
+                                    }
+                                }
+                            } else {
+                                showIncompleteCommandError();
+                            }
+                        }else if (argument.equals(ConfigurationCommand.ROUTER_OSPF)) {
+                            StringBuffer arg2 = new StringBuffer();
+                            int arg2Position = getNextPosition(tokens, arg2);
+                            cursorPosition += (arg.length() + arg2Position);
+
+                            if (arg2.length() != 0) {
+                                if (isInteger(arg2.toString(), cursorPosition)) {
+                                    StringBuffer extras = new StringBuffer();
+                                    int extrasPosition = getNextPosition(tokens, extras);
+                                    cursorPosition += (arg2.length() + extrasPosition);
+
+                                    if (extras.length() == 0) {
+                                        setMode(ROUTER_MODE);
+
+                                        RoutingProtocol protocol = router2600.getCurrentRoutingProtocol();
+
+                                        if (protocol != null) {
+                                            if (protocol.getAdministrativeDistance() > router2600.getIGRP().getAdministrativeDistance()) {
+                                                OSPF ospf = router2600.getOSPF();
+                                                ospf.setProcessID(Integer.parseInt(arg2.toString()));
+                                                router2600.setCurrentRoutingProtocol(router2600.getOSPF());
+                                                router2600.startUpdateTimer();
+                                            }
+                                        } else {
+                                            OSPF ospf = router2600.getOSPF();
+                                            ospf.setProcessID(Integer.parseInt(arg2.toString()));
+                                            router2600.setCurrentRoutingProtocol(router2600.getOSPF());
                                             router2600.startUpdateTimer();
                                         }
                                     } else {
