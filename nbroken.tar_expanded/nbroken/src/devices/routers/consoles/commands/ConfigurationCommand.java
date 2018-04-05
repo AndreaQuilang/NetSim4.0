@@ -207,7 +207,7 @@ public class ConfigurationCommand {
     public final static Command ACCESS_LIST_100_199_PERMIT_UDP_ANY_ANY = new Command("any", "Any destination host");    
     public final static Command ACCESS_LIST_100_199_PERMIT_UDP_ANY_ANY_LOG = new Command("log", "Log matches against this entry");
     
-    
+    public final static Command AREA = new Command("area", "Set Network Area");
     public final static Command ARP = new Command("arp", "Set Static ARP Entry");
     public final static Command BANNER = new Command("banner", "Define a login banner");
     public final static Command BOOT = new Command("boot", "Modify system boot parameters");

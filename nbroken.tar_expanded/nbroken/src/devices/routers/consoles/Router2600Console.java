@@ -41,10 +41,12 @@ public class Router2600Console extends RouterConsole {
 	 */
 	private static final long serialVersionUID = 8371734100652504979L;
 	private Router2600 router2600;
-
+	private String cRP;
+	
     public Router2600Console(Router2600 router2600, MainFrame frame) {
         super(router2600, frame);
         this.router2600 = router2600;
+        cRP = null;
     }
 
     /***************************************************************************
@@ -86,6 +88,7 @@ public class Router2600Console extends RouterConsole {
         StringTokenizer tokens = new StringTokenizer(input, " ", true);
         int position = 0;
         String command = null;
+        
 
         while (tokens.hasMoreTokens()) {
             String token = tokens.nextToken();
@@ -3413,7 +3416,7 @@ public class Router2600Console extends RouterConsole {
 
                                                         if (arg5.length() == 0) {
                                                             RoutingTable table = router2600.getRoutingTable();
-                                                            Entry entry = new Entry(arg2.toString(), arg3.toString(), arg4.toString(), Entry.STATIC_HOP_COUNT);
+                                                            Entry entry = new Entry(arg2.toString(), arg3.toString(), arg4.toString(), Entry.STATIC_HOP_COUNT, (Integer) null, null);
                                                             table.addEntry(entry);
                                                         } else {
                                                         }
@@ -3578,24 +3581,43 @@ public class Router2600Console extends RouterConsole {
                                         RoutingProtocol protocol = router2600.getCurrentRoutingProtocol();
 
                                         if (protocol != null) {
-                                            if (protocol.getAdministrativeDistance() > router2600.getIGRP().getAdministrativeDistance()) {
+                                            if (protocol.getAdministrativeDistance() > router2600.getOSPF().getAdministrativeDistance()) {
                                                 OSPF ospf = router2600.getOSPF();
                                                 ospf.setProcessID(Integer.parseInt(arg2.toString()));
                                                 router2600.setCurrentRoutingProtocol(router2600.getOSPF());
                                                 router2600.startUpdateTimer();
+                                                
                                             }
                                         } else {
                                             OSPF ospf = router2600.getOSPF();
                                             ospf.setProcessID(Integer.parseInt(arg2.toString()));
                                             router2600.setCurrentRoutingProtocol(router2600.getOSPF());
                                             router2600.startUpdateTimer();
+                                          
                                         }
+                                        cRP = "ospf";
                                     } else {
                                         showInvalidInputError(cursorPosition);
                                     }
                                 }
                             } else {
                                 showIncompleteCommandError();
+                            }
+                        }else if (argument.equals(ConfigurationCommand.AREA)) {
+                        	StringBuffer area = new StringBuffer();
+                            int argPosition1 = getNextPosition(tokens, area);
+                            cursorPosition += (input.length() + argPosition1);
+                            if(cRP.equals("ospf")) {
+	                            if (area.length() != 0) {
+	                                if (isValidArea(arg.toString(), cursorPosition)) {
+	                                   //accept input
+	                                	router2600.setArea(area.toString());
+	                                }
+	                            } else {
+	                                showIncompleteCommandError();
+	                            }
+                            }else {
+                            	  showInvalidInputError(position + input.length() + argPosition + arg.length() + argPosition1);
                             }
                         }
                     }
@@ -3679,7 +3701,7 @@ public class Router2600Console extends RouterConsole {
                                                     }
                                                 }
 
-                                                Entry entry = new Entry(IPAddress.getNetworkAddress(currentInterface.getIPAddress(), currentInterface.getSubnetMask()), currentInterface.getSubnetMask().toString(), "0.0.0.0", Entry.DIRECTLY_CONNECTED_HOP_COUNT);
+                                                Entry entry = new Entry(IPAddress.getNetworkAddress(currentInterface.getIPAddress(), currentInterface.getSubnetMask()), currentInterface.getSubnetMask().toString(), "0.0.0.0", Entry.DIRECTLY_CONNECTED_HOP_COUNT, currentInterface.getCost(), null );
                                                 entry.setRouterInterface(currentInterface);
                                                 entry.setConnectionType(Entry.DIRECTLY_CONNECTED);
                                                 table.addEntry(entry);
@@ -3850,6 +3872,7 @@ public class Router2600Console extends RouterConsole {
     private void processRouterCommand(String input, StringTokenizer tokens, int position) {
         int cursorPosition = position;
         Command command = getFullCommand(input, availableCommands, cursorPosition);
+       
 
         if (command != null) {
             if (command.equals(RouterCommand.NETWORK)) {

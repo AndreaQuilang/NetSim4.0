@@ -1113,7 +1113,19 @@ public class Console extends CenterableDialog implements CaretListener {
 
         return isValidQuartet;
     }
-
+    
+    protected boolean isValidArea(String str, int position) {
+    	boolean isValidArea = true;
+    	 for (int i = 0; i < str.length(); i++) {
+             char ch = str.charAt(i);
+             if(Character.isDigit(ch) && ch>0) {
+            	 isValidArea = true;
+             }else {
+            	 isValidArea = false;
+             }
+    	 }
+    	return isValidArea;
+    }
     /***************************************************************************
      * METHODS THAT SHOW THE ERROR
      **************************************************************************/

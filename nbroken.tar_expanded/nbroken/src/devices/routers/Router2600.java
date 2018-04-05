@@ -1,5 +1,6 @@
 package devices.routers;
 
+import devices.addresses.Area;
 import devices.interfaces.FastEthernet;
 import devices.interfaces.Interface;
 import devices.interfaces.Serial;
@@ -20,6 +21,7 @@ public class Router2600 extends Router {
     private final FastEthernet fastEthernet1 = new FastEthernet(this, "FastEthernet0/1", "Fa0/1");
     private final Serial serial0 = new Serial(this, "Serial0", "s0");
     private final Serial serial1 = new Serial(this, "Serial1", "s1");
+
     private final Interface[] interfaces = {
         fastEthernet0, fastEthernet1, serial0, serial1
     };
@@ -35,4 +37,7 @@ public class Router2600 extends Router {
     public Image getImage() {
         return image;
     }
+
+	
+	
 }

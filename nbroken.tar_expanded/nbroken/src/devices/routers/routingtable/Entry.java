@@ -26,12 +26,15 @@ public class Entry implements Serializable {
     private String connectionType = "";
     private int hopCount;
     private Area areaId;
+    private int cost;
 
-    public Entry(String destinationNetwork, String mask, String nextHopAddress, int hopCount) {
+    public Entry(String destinationNetwork, String mask, String nextHopAddress, int hopCount, int cost, String areaId) {
         this.destinationNetwork = new IPAddress(destinationNetwork);
         this.mask = new SubnetMask(mask);
         this.nextHopAddress = new IPAddress(nextHopAddress);
         this.hopCount = hopCount;
+        this.cost = cost;
+        this.areaId = new Area(areaId);
     }
 
     public int getHopCount() {
@@ -57,10 +60,18 @@ public class Entry implements Serializable {
     public IPAddress getDestinationNetwork() {
         return destinationNetwork;
     }
+    
+    public void setCost(int cost) {
+        this.cost = cost;
+    }
 
     public void setMask(String mask) {
         this.mask.setMask(mask);
     }
+    
+    public void setArea(String areaId) {
+        this.areaId.setArea(areaId);
+    }    
 
     public SubnetMask getMask() {
         return mask;
@@ -76,6 +87,10 @@ public class Entry implements Serializable {
     
     public Area getArea() {
         return areaId;
+    }
+    
+    public int getCost() {
+        return cost;
     }
     
  
