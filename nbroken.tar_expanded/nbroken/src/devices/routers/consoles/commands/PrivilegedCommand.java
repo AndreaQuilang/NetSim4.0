@@ -68,6 +68,7 @@ public class PrivilegedCommand {
     public final static Command SHOW_IP_INTERFACE_SERIAL = new Command("serial", "Serial");
     public final static Command SHOW_IP_NAT = new Command("nat", "IP NAT information");
     public final static Command SHOW_IP_OSPF = new Command("ospf", "OSPF information");
+    public final static Command SHOW_IP_OSPF_DATABASE = new Command("database", "OSPF Link State Database");
     public final static Command SHOW_IP_PROTOCOLS = new Command("protocols", "IP routing protocol process parameters");
     public final static Command SHOW_IP_ROUTE = new Command("route", "IP Routing table");
     public final static Command SHOW_ISIS = new Command("isis", "IS-IS routing information");

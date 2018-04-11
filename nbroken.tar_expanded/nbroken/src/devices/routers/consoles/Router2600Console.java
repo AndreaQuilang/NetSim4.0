@@ -26,6 +26,8 @@ import devices.routers.routingprotocols.OSPF;
 import devices.routers.routingprotocols.RoutingProtocol;
 
 import devices.routers.routingtable.Entry;
+import devices.routers.routingtable.LinkState;
+import devices.routers.routingtable.LinkStateDatabase;
 import devices.routers.routingtable.RoutingTable;
 
 import platform.gui.MainFrame;
@@ -283,6 +285,25 @@ public class Router2600Console extends RouterConsole {
                                             textArea.append("\nDestination - Netmask - Gateway\n");
                                             for (int i = 0; i < entries.length; i++) {
                                                 textArea.append(entries[i].getDestinationNetwork().toString() + "  " + entries[i].getMask().toString() + "  " + entries[i].getNextHopAddress().toString() + "\n");
+                                            }
+                                        } else {
+                                            showInvalidInputError(cursorPosition);
+                                        }
+                                        
+                                    }else if (argument2.equals(PrivilegedCommand.SHOW_IP_OSPF_DATABASE)) {
+                                        StringBuffer arg3 = new StringBuffer();
+                                        int arg3Position = getNextPosition(tokens, arg3);
+                                        cursorPosition += (arg2.length() + arg3Position);
+
+                                        if (arg3.length() == 0) {
+                                            LinkStateDatabase table = router2600.getDatabase();
+                                           LinkState[] entries = table.getLinkStates();
+                                            //System.out.println("Showing Router Link States:");
+                                            textArea.append("\n");
+                                            textArea.append(router2600.toString());
+                                            textArea.append("\nLink ID - ADV Router - Seq# - Link Count\n");
+                                            for (int i = 0; i < entries.length; i++) {
+                                                textArea.append(entries[i].getLinkID().toString() + "  " + entries[i].getadvRouter().toString() + "  " + "0x"+ Integer.toString(entries[i].getSeqNum()) + Integer.toString(entries[i].getLinkCount())+ "\n");
                                             }
                                         } else {
                                             showInvalidInputError(cursorPosition);

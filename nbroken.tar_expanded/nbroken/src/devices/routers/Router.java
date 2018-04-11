@@ -259,7 +259,7 @@ public class Router extends Device implements ActionListener {
 
                                     if (router.getCurrentRoutingProtocol() instanceof OSPF) {
                                         RoutingTable table = router.getRoutingTable();
-                                        LinkStateDatabase lsdb = router.getLinkStateDatabase();
+                                        LinkStateDatabase lsdb = router.getDatabase();
 
                                         if (!table.entryExists(network, mask, deviceInterface.getIPAddress().toString()) && !table.entryDirectlyConnected(network, mask)) {
                                             Entry entry = new Entry(network, mask, deviceInterface.getIPAddress().toString(), hopCount, deviceInterface.getCost(), this.getArea().toString()); 
@@ -290,7 +290,7 @@ public class Router extends Device implements ActionListener {
 
                     if (IPAddress.getNetworkAddress(connectedAddress, deviceInterface.getSubnetMask()).equals(deviceNetworkAddress)) {
                         RoutingTable table = ((Router) connectedDevice).getRoutingTable();
-                        LinkStateDatabase lsdb = ((Router)connectedDevice).getLinkStateDatabase();
+                        LinkStateDatabase lsdb = ((Router)connectedDevice).getDatabase();
 
                         if (!table.entryExists(network, mask, deviceInterface.getIPAddress().toString()) && !table.entryDirectlyConnected(network, mask)) {
                             Entry entry = new Entry(network, mask, deviceInterface.getIPAddress().toString(), hopCount, (Integer) null, router.getArea());
@@ -473,7 +473,7 @@ public class Router extends Device implements ActionListener {
         return routingTable;
     }
     
-    public LinkStateDatabase getLinkStateDatabase() {
+    public LinkStateDatabase getDatabase() {
 		return lsdb;
     }
 

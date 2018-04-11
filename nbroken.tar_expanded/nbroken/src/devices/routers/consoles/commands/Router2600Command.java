@@ -197,7 +197,8 @@ public class Router2600Command {
         PrivilegedCommand.SHOW_DIALER, PrivilegedCommand.SHOW_FLASH,
         PrivilegedCommand.SHOW_FRAME_RELAY, PrivilegedCommand.SHOW_HISTORY,
         PrivilegedCommand.SHOW_HOSTS, PrivilegedCommand.SHOW_INTERFACES,
-        PrivilegedCommand.SHOW_IP, PrivilegedCommand.SHOW_ISDN,
+        PrivilegedCommand.SHOW_IP, 
+        PrivilegedCommand.SHOW_ISDN,
         PrivilegedCommand.SHOW_ISIS, PrivilegedCommand.SHOW_NTP,
         PrivilegedCommand.SHOW_POLICY_MAP, PrivilegedCommand.SHOW_PROTOCOLS,
         PrivilegedCommand.SHOW_QUEUEING, PrivilegedCommand.SHOW_RUNNING_CONFIG,
@@ -207,6 +208,7 @@ public class Router2600Command {
     };
     public final static Command[] PRIVILEGED_SHOW_IP_ARGUMENTS = {
         PrivilegedCommand.SHOW_IP_ARP, PrivilegedCommand.SHOW_IP_BGP,
+        PrivilegedCommand.SHOW_IP_OSPF_DATABASE,
         PrivilegedCommand.SHOW_IP_DHCP, PrivilegedCommand.SHOW_IP_EIGRP,
         PrivilegedCommand.SHOW_IP_INTERFACE, PrivilegedCommand.SHOW_IP_NAT,
         PrivilegedCommand.SHOW_IP_OSPF, PrivilegedCommand.SHOW_IP_PROTOCOLS,
