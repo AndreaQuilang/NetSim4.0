@@ -243,6 +243,7 @@ public class ConfigurationCommand {
     public final static Command IP_HOST = new Command("host", "Add an entry to the ip hostname table");
     public final static Command IP_HTTP = new Command("http", "HTTP server configuration");
     public final static Command IP_NAT = new Command("nat", "NAT configuration commnads");
+    public final static Command IP_OSPF_DATABASE = new Command("database", "OSPF Link State Database");
     public final static Command IP_ROUTE = new Command("route", "Establish static routes");
     public final static Command IP_ROUTE_ABCD = new Command("a.b.c.d", "Destination prefix");
     public final static Command IP_ROUTE_ABCD_ABCD = new Command("a.b.c.d", "Destination prefix mask");

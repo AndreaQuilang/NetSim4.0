@@ -32,8 +32,12 @@ import devices.routers.routingtable.RoutingTable;
 
 import platform.gui.MainFrame;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.Vector;
 
 
 public class Router2600Console extends RouterConsole {
@@ -290,21 +294,36 @@ public class Router2600Console extends RouterConsole {
                                             showInvalidInputError(cursorPosition);
                                         }
                                         
-                                    }else if (argument2.equals(PrivilegedCommand.SHOW_IP_OSPF_DATABASE)) {
+                                    }else if (argument2.equals(PrivilegedCommand.SHOW_IP_OSPF)) {
                                         StringBuffer arg3 = new StringBuffer();
                                         int arg3Position = getNextPosition(tokens, arg3);
                                         cursorPosition += (arg2.length() + arg3Position);
-
-                                        if (arg3.length() == 0) {
-                                            LinkStateDatabase table = router2600.getDatabase();
-                                           LinkState[] entries = table.getLinkStates();
-                                            //System.out.println("Showing Router Link States:");
+                                     
+                                        if (arg3.length() != 0) {
+                                        	Map<String, Integer> database = new HashMap<>();
+                                        	int initialSeqCount = 80000000;
                                             textArea.append("\n");
                                             textArea.append(router2600.toString());
-                                            textArea.append("\nLink ID - ADV Router - Seq# - Link Count\n");
+                                            textArea.append("\nLink ID   -  ADV Router -   Seq#  - Link Count \n");
+                                            
+                                            RoutingTable table = router2600.getRoutingTable();
+                                        
+                                            Entry[] entries = table.getEntries();
+                                          
                                             for (int i = 0; i < entries.length; i++) {
-                                                textArea.append(entries[i].getLinkID().toString() + "  " + entries[i].getadvRouter().toString() + "  " + "0x"+ Integer.toString(entries[i].getSeqNum()) + Integer.toString(entries[i].getLinkCount())+ "\n");
+                                            	if(database.get(entries[i].getDestinationNetwork().toString()) == null) {
+                                            		database.put(entries[i].getDestinationNetwork().toString(), 1);
+                                            	}else {
+                                            		database.put(entries[i].getDestinationNetwork().toString(), database.get(entries[i].getDestinationNetwork().toString()) + 1);
+                                            	}
                                             }
+                                           
+                                            
+                                            for(String linkId: database.keySet()) {
+                                            	int linkctr = database.get(linkId);
+                                            	textArea.append(linkId+ " " +linkId + "  " + "0x" + (initialSeqCount+linkctr) + "   " + linkctr + "\n");
+                                            }
+                                           
                                         } else {
                                             showInvalidInputError(cursorPosition);
                                         }
@@ -3437,8 +3456,11 @@ public class Router2600Console extends RouterConsole {
 
                                                         if (arg5.length() == 0) {
                                                             RoutingTable table = router2600.getRoutingTable();
-                                                            Entry entry = new Entry(arg2.toString(), arg3.toString(), arg4.toString(), Entry.STATIC_HOP_COUNT, (Integer) null, null);
+                                                            LinkStateDatabase lsdb = router2600.getDatabase();
+                                                            Entry entry = new Entry(arg2.toString(), arg3.toString(), arg4.toString(), Entry.STATIC_HOP_COUNT, currentInterface.getCost());
                                                             table.addEntry(entry);
+                                                            lsdb.addEntry(entry);
+                                                            
                                                         } else {
                                                         }
                                                     }
@@ -3602,6 +3624,7 @@ public class Router2600Console extends RouterConsole {
                                         RoutingProtocol protocol = router2600.getCurrentRoutingProtocol();
 
                                         if (protocol != null) {
+                                        
                                             if (protocol.getAdministrativeDistance() > router2600.getOSPF().getAdministrativeDistance()) {
                                                 OSPF ospf = router2600.getOSPF();
                                                 ospf.setProcessID(Integer.parseInt(arg2.toString()));
@@ -3610,6 +3633,7 @@ public class Router2600Console extends RouterConsole {
                                                 
                                             }
                                         } else {
+                                        	System.out.println("Router2600: ospf");
                                             OSPF ospf = router2600.getOSPF();
                                             ospf.setProcessID(Integer.parseInt(arg2.toString()));
                                             router2600.setCurrentRoutingProtocol(router2600.getOSPF());
@@ -3623,22 +3647,6 @@ public class Router2600Console extends RouterConsole {
                                 }
                             } else {
                                 showIncompleteCommandError();
-                            }
-                        }else if (argument.equals(ConfigurationCommand.AREA)) {
-                        	StringBuffer area = new StringBuffer();
-                            int argPosition1 = getNextPosition(tokens, area);
-                            cursorPosition += (input.length() + argPosition1);
-                            if(cRP.equals("ospf")) {
-	                            if (area.length() != 0) {
-	                                if (isValidArea(arg.toString(), cursorPosition)) {
-	                                   //accept input
-	                                	router2600.setArea(area.toString());
-	                                }
-	                            } else {
-	                                showIncompleteCommandError();
-	                            }
-                            }else {
-                            	  showInvalidInputError(position + input.length() + argPosition + arg.length() + argPosition1);
                             }
                         }
                     }
@@ -3710,6 +3718,7 @@ public class Router2600Console extends RouterConsole {
                                                 currentInterface.setSubnetMask(subnetDecimals);
 
                                                 RoutingTable table = router2600.getRoutingTable();
+                                                LinkStateDatabase lsdb = router2600.getDatabase();
                                                 Entry[] tableEntries = table.getEntries();
 
                                                 for (int i = 0;
@@ -3717,15 +3726,16 @@ public class Router2600Console extends RouterConsole {
                                                         i++) {
                                                     if (tableEntries[i].getRouterInterface() != null) {
                                                         if ((tableEntries[i].getRouterInterface() == currentInterface) && tableEntries[i].getConnectionType().equals(Entry.DIRECTLY_CONNECTED)) {
-                                                            table.deleteEntry(tableEntries[i]);
+                                                        	table.deleteEntry(tableEntries[i]);
                                                         }
                                                     }
                                                 }
 
-                                                Entry entry = new Entry(IPAddress.getNetworkAddress(currentInterface.getIPAddress(), currentInterface.getSubnetMask()), currentInterface.getSubnetMask().toString(), "0.0.0.0", Entry.DIRECTLY_CONNECTED_HOP_COUNT, currentInterface.getCost(), null );
+                                                Entry entry = new Entry(IPAddress.getNetworkAddress(currentInterface.getIPAddress(), currentInterface.getSubnetMask()), currentInterface.getSubnetMask().toString(), "0.0.0.0", Entry.DIRECTLY_CONNECTED_HOP_COUNT, currentInterface.getCost());
                                                 entry.setRouterInterface(currentInterface);
                                                 entry.setConnectionType(Entry.DIRECTLY_CONNECTED);
                                                 table.addEntry(entry);
+                                               
                                             } else {
                                                 showInvalidInputError(cursorPosition);
                                             }
@@ -3902,9 +3912,43 @@ public class Router2600Console extends RouterConsole {
                 cursorPosition += (input.length() + argPosition);
 
                 if (arg.length() != 0) {
-                    if (isValidQuartet(arg.toString(), cursorPosition)) {
-                        router2600.addRIPNetwork(arg.toString());
-                    }
+                	if(cRP == "ospf") {
+                		System.out.println("Router2600 class: PRCESSROUTERCOMMAND()");
+                		if (isValidQuartet(arg.toString(), cursorPosition)) {
+                			router2600.addOSPFNetwork(arg.toString());
+                        	
+                        	StringBuffer arg1 = new StringBuffer();
+                            int arg1Position = getNextPosition(tokens, arg1);
+                            cursorPosition += (arg.length() + arg1Position);
+                          
+                            if (arg1.length() != 0) {
+                            	 Command argument = getFullCommand(arg1.toString(), availableCommands, arg1Position);
+                            	 if(argument.equals(RouterCommand.AREA)) {
+                            		 StringBuffer arg2 = new StringBuffer();
+                                     int arg2Position = getNextPosition(tokens, arg2);
+                                     cursorPosition += (arg1.length() + arg2Position);
+                                     
+                                     if (isInteger(arg2.toString(), cursorPosition) && arg2 != null) {
+                                     	//router2600.setArea(Integer.parseInt(arg2.toString()));
+                                     	router2600.addArea(Integer.parseInt(arg2.toString()));
+                                     	
+                                     }else {
+                                    	 showIncompleteCommandError();
+                                     }
+                            	 }
+                            }else {
+                            	   showIncompleteCommandError();
+                            }
+                		}else {
+                     	   showIncompleteCommandError();
+                     }
+                		
+                	}else if (isValidQuartet(arg.toString(), cursorPosition)) {
+                    	router2600.addRIPNetwork(arg.toString());
+                    }else {
+                 	   showIncompleteCommandError();
+                 }
+                    
                 } else {
                     showIncompleteCommandError();
                 }

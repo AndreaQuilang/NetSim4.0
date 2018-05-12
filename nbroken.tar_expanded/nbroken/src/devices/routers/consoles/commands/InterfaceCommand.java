@@ -25,6 +25,7 @@ public class InterfaceCommand {
     public final static Command IP_NAT = new Command("nat", "NAT interface commands");
     public final static Command IP_NETWORK = new Command("network", "Assign an IPX network & enable IPX routing");
     public final static Command IP_OSPF = new Command("ospf", "OSPF interface commands");
+    public final static Command IP_OSPF_DATABASE = new Command("database", "OSPF interface commands");
     public final static Command IP_POLICY = new Command("policy", "Enable policy routing");
     public final static Command IP_ROUTER = new Command("router", "IP router interface commands");
     public final static Command IP_SUMMARY_ADDRESS = new Command("summary-address", "Perform address summarization");

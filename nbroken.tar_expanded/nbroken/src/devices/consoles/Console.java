@@ -54,7 +54,10 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 import java.util.Stack;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -1982,6 +1985,27 @@ public boolean Tracert(){
     	if (marker==1)textArea.append("\n" + routeOfTrace + "\n");
     	if (marker==2)textArea.append("\nDestination Host Unreachable.\n");
   }
+    
+    public void showTraceRoute(LinkedList<Device>sp, Set<Device> set) {
+        // String add = address.toString()
+    	if(sp != null) {
+    		textArea.append("\n");
+    		for (Device u: set){
+  		       textArea.append(u+": ");
+  		       int ctr = 0;
+  		       for (Device d: u.sp) {
+  		          textArea.append(d.getName()+ " ");
+  		          if(ctr != u.sp.size()-1) {
+  		        	 textArea.append("->" + " ");
+  		          }
+  		          ctr++;
+  		       }
+  		     textArea.append("\n");
+  		    }
+    	}else {
+    		textArea.append("\nDestination Host Unreachable.\n");
+    	} 	
+   }
 
  
     public void showRequestTimedOut(IPAddress address) {

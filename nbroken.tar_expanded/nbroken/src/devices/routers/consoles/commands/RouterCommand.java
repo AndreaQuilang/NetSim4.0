@@ -4,7 +4,8 @@ import devices.commands.Command;
 
 
 public class RouterCommand {
-    public final static Command AUTO_SUMMARY = new Command("auto-summary", "Enable automatic network number summarization");
+	public final static Command AREA = new Command("area", "Accepts Area of OSPF Link State"); 
+	public final static Command AUTO_SUMMARY = new Command("auto-summary", "Enable automatic network number summarization");
     public final static Command DEFAULT_INFORMATION = new Command("default-information", "Control distribution of default information");
     public final static Command DEFAULT_METRIC = new Command("default-metric", "Set metric of redistributed routes");
     public final static Command DISTANCE = new Command("distance", "Control distribution of default information");

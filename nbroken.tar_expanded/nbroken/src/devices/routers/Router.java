@@ -26,7 +26,7 @@ import devices.switches.vlan.VLAN;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
+import java.util.ArrayList;
 import java.util.Vector;
 
 import javax.swing.Timer;
@@ -45,9 +45,10 @@ public class Router extends Device implements ActionListener {
     private final OSPF ospf = new OSPF();
     private String password = "";
     private String secret = "";
-    private Area area;
+    private int area;
+    private Vector areas = new Vector();
     private final RoutingTable routingTable = new RoutingTable();
-    private final LinkStateDatabase lsdb = new LinkStateDatabase();
+    private LinkStateDatabase lsdb = new LinkStateDatabase();
     private final Vector IPAccessLists = new Vector();
     private RoutingProtocol currentRoutingProtocol;
     private final Vector networksAdvertisedByOSPF = new Vector();
@@ -56,6 +57,10 @@ public class Router extends Device implements ActionListener {
     private final Vector networksAdvertisedByEIGRP = new Vector();
     private Timer updateTimer = new Timer(30000, this);
 
+    //added
+    private ArrayList<Entry> entries = new ArrayList<Entry>();
+   
+    //
     public Router(String name, Point location) {
         super(name, location);
         macAddress = "4000." + randomHexChar() + randomHexChar() + randomHexChar() + randomHexChar() + "." + randomHexChar() + randomHexChar() + randomHexChar() + randomHexChar() + "." + randomHexChar() + randomHexChar() + randomHexChar() + randomHexChar();
@@ -66,6 +71,7 @@ public class Router extends Device implements ActionListener {
         if (updateTimer.isRunning()) {
             updateTimer.setDelay(currentRoutingProtocol.getUpdateInterval());
             updateTimer.restart();
+            
         } else {
             updateTimer.start();
         }
@@ -109,15 +115,15 @@ public class Router extends Device implements ActionListener {
                 }
             }
         } else if (currentRoutingProtocol.equals(ospf)) {
-            String[] networks = getNetworksAdvertisedByOSPF();
+        	String[] networks = getNetworksAdvertisedByOSPF();
 
             for (int i = 0; i < networks.length; i++) {
                 RoutingTable table = getRoutingTable();
                 Entry[] entries = table.getEntries();
 
                 for (int j = 0; j < entries.length; j++) {
-                    if (IPAddress.getNetworkAddress(new IPAddress(networks[i]), new SubnetMask(IPAddress.getClassfulSubnet(networks[i])), new Area(Area.getArea(networks[i]))).equals(IPAddress.getNetworkAddress(entries[j].getDestinationNetwork(), new SubnetMask(IPAddress.getClassfulSubnet(networks[i])), new Area(Area.getArea(networks[i]))))) {
-                        ospfNetwork(entries[j].getDestinationNetwork().toString(), entries[j].getMask().toString(),entries[j].getArea().toString());
+                    if (IPAddress.getNetworkAddress(new IPAddress(networks[i]), new SubnetMask(IPAddress.getClassfulSubnet(networks[i]))).equals(IPAddress.getNetworkAddress(entries[j].getDestinationNetwork(), new SubnetMask(IPAddress.getClassfulSubnet(networks[i]))))) {
+                        ospfNetwork(entries[j].getDestinationNetwork().toString(), entries[j].getMask().toString());
                     }
                 }
             }
@@ -178,7 +184,7 @@ public class Router extends Device implements ActionListener {
                                         RoutingTable table = router.getRoutingTable();
 
                                         if (!table.entryExists(network, mask, deviceInterface.getIPAddress().toString()) && !table.entryDirectlyConnected(network, mask)) {
-                                            Entry entry = new Entry(network, mask, deviceInterface.getIPAddress().toString(), hopCount, (Integer) null, null);
+                                            Entry entry = new Entry(network, mask, deviceInterface.getIPAddress().toString(), hopCount, (Integer) deviceInterface.getCost());
                                             table.addEntry(entry);
 
                                             Interface[] routerInterfaces = device.getClosedInterfaces();
@@ -207,7 +213,7 @@ public class Router extends Device implements ActionListener {
                         RoutingTable table = ((Router) connectedDevice).getRoutingTable();
 
                         if (!table.entryExists(network, mask, deviceInterface.getIPAddress().toString()) && !table.entryDirectlyConnected(network, mask)) {
-                            Entry entry = new Entry(network, mask, deviceInterface.getIPAddress().toString(), hopCount, (Integer) null, null);
+                            Entry entry = new Entry(network, mask, deviceInterface.getIPAddress().toString(), hopCount, deviceInterface.getCost());
                             table.addEntry(entry);
 
                             Interface[] routerInterfaces = connectedDevice.getClosedInterfaces();
@@ -224,18 +230,18 @@ public class Router extends Device implements ActionListener {
         }
     }
     
-    public void ospfNetwork(String network, String mask, String areaId) {
+    public void ospfNetwork(String network, String mask) {
         Router router = this;
         Interface[] interfaces = router.getInterfaces();
 
         for (int i = 0; i < interfaces.length; i++) {
             if (interfaces[i].getState().equals(Interface.UP)) {
-                propagateOSPFNetwork(interfaces[i], network, mask, 0, areaId);
+                propagateOSPFNetwork(interfaces[i], network, mask, 0);
             }
         }
     }
 
-    public void propagateOSPFNetwork(Interface deviceInterface, String network, String mask, int hopCount, String areaId) {
+    public void propagateOSPFNetwork(Interface deviceInterface, String network, String mask, int hopCount) {
         String deviceNetworkAddress = IPAddress.getNetworkAddress(deviceInterface.getIPAddress(), deviceInterface.getSubnetMask());
         Interface connectedInterface = deviceInterface.getConnectedInterface();
 
@@ -259,12 +265,10 @@ public class Router extends Device implements ActionListener {
 
                                     if (router.getCurrentRoutingProtocol() instanceof OSPF) {
                                         RoutingTable table = router.getRoutingTable();
-                                        LinkStateDatabase lsdb = router.getDatabase();
 
                                         if (!table.entryExists(network, mask, deviceInterface.getIPAddress().toString()) && !table.entryDirectlyConnected(network, mask)) {
-                                            Entry entry = new Entry(network, mask, deviceInterface.getIPAddress().toString(), hopCount, deviceInterface.getCost(), this.getArea().toString()); 
+                                            Entry entry = new Entry(network, mask, deviceInterface.getIPAddress().toString(), hopCount, (Integer) deviceInterface.getCost());
                                             table.addEntry(entry);
-                                            lsdb.addEntry(entry);
 
                                             Interface[] routerInterfaces = device.getClosedInterfaces();
 
@@ -272,7 +276,7 @@ public class Router extends Device implements ActionListener {
                                                     j < routerInterfaces.length;
                                                     j++) {
                                                 if (!routerInterfaces[j].equals(otherInterface) && routerInterfaces[j].getState().equals(Interface.UP)) {
-                                                    propagateOSPFNetwork(routerInterfaces[j], network, mask, hopCount + 1, areaId);
+                                                    propagateOSPFNetwork(routerInterfaces[j], network, mask, hopCount + 1);
                                                 }
                                             }
                                         }
@@ -290,18 +294,16 @@ public class Router extends Device implements ActionListener {
 
                     if (IPAddress.getNetworkAddress(connectedAddress, deviceInterface.getSubnetMask()).equals(deviceNetworkAddress)) {
                         RoutingTable table = ((Router) connectedDevice).getRoutingTable();
-                        LinkStateDatabase lsdb = ((Router)connectedDevice).getDatabase();
 
                         if (!table.entryExists(network, mask, deviceInterface.getIPAddress().toString()) && !table.entryDirectlyConnected(network, mask)) {
-                            Entry entry = new Entry(network, mask, deviceInterface.getIPAddress().toString(), hopCount, (Integer) null, router.getArea());
+                            Entry entry = new Entry(network, mask, deviceInterface.getIPAddress().toString(), hopCount, deviceInterface.getCost());
                             table.addEntry(entry);
-                            lsdb.addEntry(entry);
-                            
+
                             Interface[] routerInterfaces = connectedDevice.getClosedInterfaces();
 
                             for (int j = 0; j < routerInterfaces.length; j++) {
                                 if (!routerInterfaces[j].equals(connectedInterface) && routerInterfaces[j].getState().equals(Interface.UP)) {
-                                    propagateOSPFNetwork(routerInterfaces[j], network, mask, hopCount + 1, areaId);
+                                    propagateOSPFNetwork(routerInterfaces[j], network, mask, hopCount + 1);
                                 }
                             }
                         }
@@ -351,7 +353,7 @@ public class Router extends Device implements ActionListener {
                                             RoutingTable table = router.getRoutingTable();
 
                                             if (!table.entryExists(network, mask, deviceInterface.getIPAddress().toString()) && !table.entryDirectlyConnected(network, mask)) {
-                                                Entry entry = new Entry(network, mask, deviceInterface.getIPAddress().toString(), hopCount, (Integer) null, null);
+                                                Entry entry = new Entry(network, mask, deviceInterface.getIPAddress().toString(), hopCount, deviceInterface.getCost());
                                                 table.addEntry(entry);
 
                                                 Interface[] routerInterfaces = device.getClosedInterfaces();
@@ -386,7 +388,7 @@ public class Router extends Device implements ActionListener {
                             RoutingTable table = ((Router) connectedDevice).getRoutingTable();
 
                             if (!table.entryExists(network, mask, deviceInterface.getIPAddress().toString()) && !table.entryDirectlyConnected(network, mask)) {
-                                Entry entry = new Entry(network, mask, deviceInterface.getIPAddress().toString(), hopCount, (Integer) null, null);
+                                Entry entry = new Entry(network, mask, deviceInterface.getIPAddress().toString(), hopCount, deviceInterface.getCost());
                                 table.addEntry(entry);
 
                                 Interface[] routerInterfaces = connectedDevice.getClosedInterfaces();
@@ -432,13 +434,13 @@ public class Router extends Device implements ActionListener {
     }
 
     public String[] getNetworksAdvertisedByOSPF() {
-        String[] networks = new String[networksAdvertisedByOSPF.size()];
+    	 String[] networks = new String[networksAdvertisedByOSPF.size()];
 
-        for (int i = 0; i < networks.length; i++) {
-            networks[i] = networksAdvertisedByOSPF.get(i).toString();
-        }
+         for (int i = 0; i < networks.length; i++) {
+             networks[i] = networksAdvertisedByOSPF.get(i).toString();
+         }
 
-        return networks;
+         return networks;
     }
     
     public String[] getNetworksAdvertisedByIGRP() {
@@ -474,7 +476,13 @@ public class Router extends Device implements ActionListener {
     }
     
     public LinkStateDatabase getDatabase() {
-		return lsdb;
+    	if(lsdb != null) {
+    		return lsdb;
+    	}else {
+    		lsdb = new LinkStateDatabase();
+    		return lsdb;
+    	}
+		
     }
 
     public void addIPAccessList(IPAccessList accessList) {
@@ -536,11 +544,24 @@ public class Router extends Device implements ActionListener {
 
         return true;
     }
-    public void setArea(String area) {
-		this.area.setArea(area); 
+    public void setArea(int area) {
+		this.area = area;
 	}
 	
-	public String getArea() {
-		return Integer.toString(this.area.getArea());
+	public int getArea() {
+		return this.area;
+	}
+	
+	public void addArea(int areaID) {
+	
+		if(areas == null) {
+			areas = new Vector();
+		}
+		areas.add(areaID);
+		
+	}
+	
+	public Vector getAreas() {
+		return areas;
 	}
 }

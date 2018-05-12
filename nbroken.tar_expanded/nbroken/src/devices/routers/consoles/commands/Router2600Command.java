@@ -62,7 +62,7 @@ public class Router2600Command {
         InterfaceCommand.ISIS, InterfaceCommand.NO, InterfaceCommand.SHUTDOWN
     };
     public final static Command[] ROUTER_MODE_COMMANDS = {
-        RouterCommand.AUTO_SUMMARY, RouterCommand.DEFAULT_INFORMATION,
+    	RouterCommand.AREA	,RouterCommand.AUTO_SUMMARY, RouterCommand.DEFAULT_INFORMATION,
         RouterCommand.DEFAULT_METRIC, RouterCommand.DISTANCE,
         RouterCommand.DISTRIBUTE_LIST, RouterCommand.EXIT,
         RouterCommand.PASSIVE_INTERFACE, RouterCommand.NETWORK,
@@ -144,7 +144,8 @@ public class Router2600Command {
         ConfigurationCommand.IP_ACCESS_LIST, ConfigurationCommand.IP_CLASSLESS,
         ConfigurationCommand.IP_DHCP, ConfigurationCommand.IP_DOMAIN_LOOKUP,
         ConfigurationCommand.IP_HOST, ConfigurationCommand.IP_HTTP,
-        ConfigurationCommand.IP_NAT, ConfigurationCommand.IP_ROUTE
+        ConfigurationCommand.IP_NAT, ConfigurationCommand.IP_ROUTE,
+        ConfigurationCommand.IP_OSPF_DATABASE
     };
     public final static Command[] CONFIGURATION_IP_ROUTE_ARGUMENTS = {
         ConfigurationCommand.IP_ROUTE_ABCD
@@ -166,6 +167,7 @@ public class Router2600Command {
         InterfaceCommand.IP_ACCESS_GROUP, InterfaceCommand.IP_ADDRESS,
         InterfaceCommand.IP_NAT, InterfaceCommand.IP_NETWORK,
         InterfaceCommand.IP_OSPF, InterfaceCommand.IP_POLICY,
+        InterfaceCommand.IP_OSPF_DATABASE,
         InterfaceCommand.IP_ROUTER, InterfaceCommand.IP_SUMMARY_ADDRESS
     };
     public final static Command[] INTERFACE_IP_ACCESS_GROUP_ARGUMENTS = {
@@ -208,11 +210,15 @@ public class Router2600Command {
     };
     public final static Command[] PRIVILEGED_SHOW_IP_ARGUMENTS = {
         PrivilegedCommand.SHOW_IP_ARP, PrivilegedCommand.SHOW_IP_BGP,
-        PrivilegedCommand.SHOW_IP_OSPF_DATABASE,
+       
         PrivilegedCommand.SHOW_IP_DHCP, PrivilegedCommand.SHOW_IP_EIGRP,
         PrivilegedCommand.SHOW_IP_INTERFACE, PrivilegedCommand.SHOW_IP_NAT,
-        PrivilegedCommand.SHOW_IP_OSPF, PrivilegedCommand.SHOW_IP_PROTOCOLS,
+        PrivilegedCommand.SHOW_IP_OSPF, 
+        PrivilegedCommand.SHOW_IP_PROTOCOLS,
         PrivilegedCommand.SHOW_IP_ROUTE
+    };
+    public final static Command[] PRIVILEGED_SHOW_IP_OSPF_ARGUMENTS = {
+    		 PrivilegedCommand.SHOW_IP_OSPF_DATABASE, 
     };
     public final static Command[] PRIVILEGED_SHOW_IP_INTERFACE_ARGUMENTS = {
         PrivilegedCommand.SHOW_IP_INTERFACE_BRIEF,
@@ -250,6 +256,7 @@ public class Router2600Command {
         PrivilegedCommand.CONFIGURE.setArguments(PRIVILEGED_CONFIGURE_ARGUMENTS);
         PrivilegedCommand.SHOW.setArguments(PRIVILEGED_SHOW_ARGUMENTS);
         PrivilegedCommand.SHOW_IP.setArguments(PRIVILEGED_SHOW_IP_ARGUMENTS);
+        PrivilegedCommand.SHOW_IP_OSPF.setArguments(PRIVILEGED_SHOW_IP_OSPF_ARGUMENTS);
         PrivilegedCommand.SHOW_IP_INTERFACE.setArguments(PRIVILEGED_SHOW_IP_INTERFACE_ARGUMENTS);
     }
 }

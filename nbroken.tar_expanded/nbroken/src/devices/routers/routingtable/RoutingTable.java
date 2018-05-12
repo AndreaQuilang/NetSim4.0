@@ -12,11 +12,12 @@ public class RoutingTable implements Serializable {
 	 */
 	private static final long serialVersionUID = -5816274881630873553L;
 	private final Vector table = new Vector();
+	private int initialSeqNum = 80001;
 
     public void addEntry(Entry entry) {
         table.add(entry);
     }
-
+    
     public Entry[] getEntries() {
         Entry[] entries = new Entry[table.size()];
 
@@ -74,4 +75,7 @@ public class RoutingTable implements Serializable {
     public void deleteEntryAtRow(int row) {
         table.remove(row);
     }
+
+   
 }
+

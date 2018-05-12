@@ -2,6 +2,7 @@ package platform.gui;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -31,52 +32,113 @@ public class Router2600PortDialog extends CenterableDialog implements MouseListe
     public int interfaceCount=0, addOrRemove=0;
     Interface[] interfaceArray;
     
-    JLabel[] feth = new JLabel[2];
-    JLabel[] fethLights = new JLabel[2];
+    JLabel[] feth = new JLabel[3];
+    JLabel[] fethLights = new JLabel[3];
     
     
 
     public Router2600PortDialog(MainFrame mainFrame) {
         super((JFrame) mainFrame, "Choose a Port", true);
         
-        this.setPreferredSize(new Dimension(601,280));
+        this.setPreferredSize(new Dimension(730,280));
               
         panel = new JPanel();
         setContentPane(panel);
-        panel.setLayout(new GridLayout(15,15));
+        panel.setLayout(new GridLayout(6, 1));
         panel.setSize(601, 270);
         panel.setBackground(new Color(10));
+        
+        JPanel panel11 = new JPanel();
+        panel11.setLayout(new GridLayout(1, 3));
+        JPanel panel1 = new JPanel();
+        panel1.setLayout(new GridLayout(1, 12));
+        JPanel panel2 = new JPanel();
+        panel1.setLayout(new GridLayout(1, 3));
+        JPanel panel3 = new JPanel();
+        panel3.setLayout(new GridLayout(1, 12));
+        JPanel panel4 = new JPanel();
+        panel4.setLayout(new GridLayout(1, 3));
+        JPanel panel6 = new JPanel();
+        panel6.setLayout(new GridLayout(1, 3));
+        
 
         try {
-            BufferedImage image = ImageIO.read(loader.getResource("images/graphics/router2600.png"));
+            BufferedImage image = ImageIO.read(loader.getResource("images/graphics/router2600.jpg"));
             panel.setBorder(new BackgroundImageBorder(image));
         } catch (IOException e) {
             e.printStackTrace();
         }
         
 
-        for (int l =0; l<2; l++){
-        	feth[l] = new JLabel("FastEthernet0/" + l); 
+        for (int l =0; l<3; l++){
+        	feth[l] = new JLabel("FA0/" + l); 
         	feth[l].setForeground(Color.RED);
             feth[l].addMouseListener(this);
             
             fethLights[l] = new JLabel(new ImageIcon(loader.getResource("images/graphics/lights_off2.png")));
             
         }
-
-        for (int j=0; j<37; j++){        	
-        	panel.add(new JLabel("    "));
-        }
-    	panel.add(feth[0]);
-    	panel.add(feth[1]);
-        for (int j=0; j<23; j++){        	
-        	panel.add(new JLabel("    "));
-        }
-        panel.add(fethLights[0]);
-    	panel.add(fethLights[1]);
-        for (int j=0; j<7; j++){        	
-        	panel.add(new JLabel("    "));
-        }
+        
+        panel6.add(new JLabel(" "));
+       	panel6.add(new JLabel(" "));
+       	panel6.add(new JLabel(" "));
+       	panel6.setOpaque(false);
+       	panel.add(panel6);
+        
+        panel11.add(new JLabel(" "));
+    	panel11.add(new JLabel(" "));
+    	panel11.add(new JLabel(" "));
+    	panel11.setOpaque(false);
+    	panel.add(panel11);
+    	
+    	panel1.add(new JLabel(" "));
+        panel1.add(new JLabel(" "));
+        panel1.add(new JLabel(" "));
+        panel1.add(new JLabel(" "));
+        panel1.add(feth[0]);
+        panel1.add(new JLabel(""));
+    	panel1.add(feth[1]);
+    	panel1.add(new JLabel(""));
+    	panel1.add(feth[2]);
+    	panel1.add(new JLabel(" "));
+    	panel1.add(new JLabel(" "));
+    	panel1.add(new JLabel(" ")); 
+    	panel1.setOpaque(false);
+    	
+    	panel.add(panel1);
+    	
+    	//panel2.add(new JLabel(" "));
+        panel2.add(new JLabel(" "));
+    	panel2.add(new JLabel(" "));
+    	panel2.add(new JLabel(" "));
+    	panel2.setOpaque(false);
+    	panel.add(panel2);
+    	
+    	
+    	panel3.add(new JLabel(" "));
+        panel3.add(new JLabel(" "));
+        panel3.add(new JLabel(" "));
+        panel3.add(new JLabel(" "));
+        panel3.add(fethLights[0]);
+        panel3.add(new JLabel(" "));
+    	panel3.add(fethLights[1]);
+    	panel3.add(new JLabel(""));
+    	panel3.add(fethLights[2]);
+    	panel3.add(new JLabel(" "));
+    	panel3.add(new JLabel(" "));
+    	panel3.add(new JLabel(""));
+    	panel3.setOpaque(false);
+    	panel.add(panel3);
+    	
+    	panel4.add(new JLabel(" "));
+       	panel4.add(new JLabel(" "));
+       	panel4.add(new JLabel(" "));
+       	panel4.setOpaque(false);
+       	panel.add(panel4);
+    	
+    	/*
+       
+      */
         
        hideAll();
         
@@ -86,7 +148,7 @@ public class Router2600PortDialog extends CenterableDialog implements MouseListe
     public void setActiveHostInterface(Interface face, int index){
     	if (index>=-1){
     		interfaceArray[index] = face;
-    		for (int l=0; l<2; l++){
+    		for (int l=0; l<3; l++){
     			if ((face.getName()).equalsIgnoreCase("FastEthernet0/" + l)){
 	    			feth[l].setVisible(true);
 	    			feth[l].setToolTipText(Integer.toString(index));
@@ -120,7 +182,7 @@ public class Router2600PortDialog extends CenterableDialog implements MouseListe
 
     public void hideAll(){
     	 
-    	 for(int l=0; l<2; l++){
+    	 for(int l=0; l<3; l++){
     		 feth[l].setVisible(false);    		 
     	 }
 

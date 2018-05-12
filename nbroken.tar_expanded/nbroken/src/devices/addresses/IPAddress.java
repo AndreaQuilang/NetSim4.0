@@ -191,7 +191,7 @@ public class IPAddress extends Address {
 		// TODO Auto-generated method stub
 		int[] addressQuartet = address.getAddress();
         int[] maskQuartet = mask.getMaskArray();
-        int areaId = area.getArea();
+        int areaId = area.getAreaID();
         
         StringBuffer networkAddress = new StringBuffer();
 

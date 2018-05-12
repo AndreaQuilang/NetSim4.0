@@ -7,6 +7,10 @@ import devices.addresses.SubnetMask;
 import devices.interfaces.Interface;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 
 public class Entry implements Serializable {
@@ -27,14 +31,20 @@ public class Entry implements Serializable {
     private int hopCount;
     private Area areaId;
     private int cost;
+    //Added
+    public String name;
+    public List<Vertex> sp=new LinkedList<>();
+    public Integer d = Integer.MAX_VALUE;
+	public Map<Vertex,Integer> adj = new HashMap<>();
+	//Added 
 
-    public Entry(String destinationNetwork, String mask, String nextHopAddress, int hopCount, int cost, String areaId) {
+    public Entry(String destinationNetwork, String mask, String nextHopAddress, int hopCount, int cost) {
         this.destinationNetwork = new IPAddress(destinationNetwork);
         this.mask = new SubnetMask(mask);
         this.nextHopAddress = new IPAddress(nextHopAddress);
         this.hopCount = hopCount;
         this.cost = cost;
-        this.areaId = new Area(areaId);
+        this.name = this.destinationNetwork.toString();
     }
 
     public int getHopCount() {
@@ -69,8 +79,8 @@ public class Entry implements Serializable {
         this.mask.setMask(mask);
     }
     
-    public void setArea(String areaId) {
-        this.areaId.setArea(areaId);
+    public void setArea(String area) {
+        this.areaId = new Area(area);
     }    
 
     public SubnetMask getMask() {
@@ -92,6 +102,18 @@ public class Entry implements Serializable {
     public int getCost() {
         return cost;
     }
-    
+    //Added
+    public void add(Vertex v, int d){
+	    adj.put(v,d);
+	 }
+//
+//	 public Entry(String name){
+//	    this.name=name;
+//	 }
+	 
+	 public String toString(){
+	    return name;
+	 } 
+	 //added
  
 }

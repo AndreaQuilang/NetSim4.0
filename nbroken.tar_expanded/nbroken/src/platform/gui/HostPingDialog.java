@@ -1,10 +1,12 @@
 package platform.gui;
 
+import devices.Device;
 import devices.addresses.IPAddress;
 
 import devices.consoles.Console;
 
 import devices.hosts.Host;
+import devices.interfaces.Interface;
 
 import java.awt.Color;
 import java.awt.FlowLayout;
@@ -152,12 +154,15 @@ public class HostPingDialog extends CenterableDialog implements ActionListener {
 
         if (source == clearButton) {
             clearFields();
+            
         } else if (source == ping) {
             String ipAddress = ipAddressField.getText();
             boolean validIP = IPAddress.isValidInputQuartet(ipAddress);
 
             if (validIP) {
                 ping(ipAddress);
+                
+                
             } else {
                 ipAddressField.setText("");
             }

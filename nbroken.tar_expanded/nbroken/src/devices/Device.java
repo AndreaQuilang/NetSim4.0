@@ -19,6 +19,10 @@ import java.awt.Point;
 import java.io.Serializable;
 
 import java.lang.Math;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.swing.JComponent;
@@ -42,6 +46,9 @@ public class Device implements Serializable {
     private Interface[] interfaces;
     private DeviceUI deviceUI;
     private transient Console console;
+    private Integer d = Integer.MAX_VALUE;
+	private Map<Device, Integer> adj = new HashMap<>();;
+	public List<Device> sp=new LinkedList<>();
 
     public char randomHexChar(){
     	int tempInt;
@@ -74,6 +81,7 @@ public class Device implements Serializable {
     public Device(String name, Point location) {
         this.name = name;
         this.location = location;
+        if(this.adj == null) System.out.println("adj null");
         deviceCount++;
         DEVICES.add(this);
     }
@@ -206,6 +214,18 @@ public class Device implements Serializable {
         return image;
     }
 
+    public void addToAdj(Device d, Integer cost) {
+    	if(this.adj != null) {
+    		this.adj.put(d, cost);
+    		System.out.println("SAVED");
+    	}
+    	System.out.println("ADJ CONTENTS");
+    	System.out.println("COUNT" + this.adj.size());
+    	for(Device d1: this.adj.keySet()) {
+    		System.out.println(d1.getName());
+    	}
+    }
+    
     public boolean contains(Point point, Device device, JComponent observer) {
         Point location = getLocation();
 
@@ -215,4 +235,21 @@ public class Device implements Serializable {
 
         return false;
     }
+
+	public void setD(Integer d) {
+		// TODO Auto-generated method stub
+		this.d = d;
+		
+	}
+	
+	public Integer getD() {
+		// TODO Auto-generated method stub
+		return this.d;
+		
+	}
+
+	public Map<Device, Integer> getAdj() {
+		// TODO Auto-generated method stub
+		return this.adj;
+	}
 }

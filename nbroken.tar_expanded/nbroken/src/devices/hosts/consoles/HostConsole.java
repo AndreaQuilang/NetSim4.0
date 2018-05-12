@@ -1,5 +1,6 @@
 package devices.hosts.consoles;
 
+import devices.Device;
 import devices.addresses.IPAddress;
 
 import devices.commands.Command;
@@ -10,9 +11,11 @@ import devices.hosts.Host;
 
 import devices.hosts.consoles.commands.HostCommand;
 import devices.hosts.consoles.commands.UserCommand;
-
+import devices.interfaces.Interface;
+import platform.gui.Graph;
 import platform.gui.MainFrame;
 
+import java.util.LinkedList;
 import java.util.StringTokenizer;
 
 
@@ -23,11 +26,16 @@ public class HostConsole extends Console {
 	 * 
 	 */
 	private static final long serialVersionUID = -837096981977289607L;
-
+	private static boolean isOSPF;
+	
 	public HostConsole(Host host, MainFrame frame) {
         super(host, frame);
         removeKeyBindings();
     }
+	
+	public void updateIsOSPF(boolean b) {
+		isOSPF = b;
+	}
 
     public void initialize() {
         currentPrompt = "[user@localhost ~]$";
@@ -96,6 +104,7 @@ public class HostConsole extends Console {
                             IPAddress destination = new IPAddress(arg.toString());
 
                             if (deviceReachable(getDevice(), destination)) {
+                            	
                                 showReply(destination);
                             } else {
                                 showRequestTimedOut(destination);
@@ -131,7 +140,51 @@ public class HostConsole extends Console {
                             showInvalidInputError(cursorPosition);
                         }
                     }
-                } else {
+                }
+                }else if(command.equals(UserCommand.TRACERTOSPF)) {
+                	
+                	StringBuffer arg1 = new StringBuffer();
+                    int argPosition1 = getNextPosition(tokens, arg1);
+                    cursorPosition += (input.length() + argPosition1);
+                    
+                    if (arg1.length() != 0) {
+                        if (isValidQuartet(arg1.toString(), cursorPosition)) {
+                            StringBuffer extras = new StringBuffer();
+                            int extrasPosition = getNextPosition(tokens, extras);
+                            cursorPosition += (arg1.length() + extrasPosition);
+
+                            if (extras.length() == 0) {
+                                IPAddress destination = new IPAddress(arg1.toString());
+                                
+                                Device dis = getDevice();
+                                Graph graph = new Graph();
+                                int ctr = 0;
+                                for(Device d : dis.getDevices()) {
+                                	ctr++;
+                                	for(Interface in: d.getClosedInterfaces()) {
+                                		System.out.println(d.toString() +"-> " +in.getName());
+                                		
+                                			d.addToAdj(in.getConnectedInterface().getDevice(), in.getCost());
+                                    		//added to adj
+                                		
+                                	}                              	
+                                	graph.add(d); //added to graph
+                                }
+                                
+                                LinkedList<Device> sp;
+                                sp = graph.dijkstra(dis);
+                                showTraceRoute(sp, graph.getV());
+                                
+                                
+                              
+                            } else {
+                                showInvalidInputError(cursorPosition);
+                            }
+                        }
+                    
+                }
+                
+                }else {
                     showIncompleteCommandError();
                 }
             	
@@ -139,4 +192,4 @@ public class HostConsole extends Console {
             }
         }
     }
-}
+
