@@ -130,7 +130,6 @@ public class HostPingDialog extends CenterableDialog implements ActionListener {
     public void showRequestTimedOut(IPAddress address) {
         String add = address.toString();
         textArea.append("\nPinging " + add + " with 32 bytes of data:\n");
-
         for (int i = 0; i < 5; i++) {
             textArea.append("\nRequest timed out.");
         }

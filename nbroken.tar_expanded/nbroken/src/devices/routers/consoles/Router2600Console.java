@@ -318,10 +318,11 @@ public class Router2600Console extends RouterConsole {
                                             	}
                                             }
                                            
-                                            
-                                            for(String linkId: database.keySet()) {
-                                            	int linkctr = database.get(linkId);
-                                            	textArea.append(linkId+ " " +linkId + "  " + "0x" + (initialSeqCount+linkctr) + "   " + linkctr + "\n");
+                                            if(cRP == "ospf") {
+	                                            for(String linkId: database.keySet()) {
+	                                            	int linkctr = database.get(linkId);
+	                                            	textArea.append(linkId+ " " +linkId + "  " + "0x" + (initialSeqCount+linkctr) + "   " + linkctr + "\n");
+	                                            }
                                             }
                                            
                                         } else {
@@ -375,7 +376,12 @@ public class Router2600Console extends RouterConsole {
         }
     }
 
-    private void processConfigurationCommand(String input, StringTokenizer tokens, int position) {
+    private String newOSPF() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private void processConfigurationCommand(String input, StringTokenizer tokens, int position) {
         int cursorPosition = position;
         Command command = getFullCommand(input, availableCommands, cursorPosition);
 

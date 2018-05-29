@@ -93,6 +93,7 @@ public class RouterUI extends DeviceUI implements ActionListener {
             for (int i = 0; i < Device.DEVICES.size(); i++) {
                 if (device == (Device) Device.DEVICES.get(i)) {
                     Device.DEVICES.remove(i);
+                    
                     MainFrame.DESIGNER_PANEL.repaint();
 
                     break;

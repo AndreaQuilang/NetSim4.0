@@ -1,6 +1,6 @@
 package devices.routers.routingtable;
 
-import devices.addresses.Area;
+
 import devices.addresses.IPAddress;
 import devices.addresses.SubnetMask;
 
@@ -29,13 +29,14 @@ public class Entry implements Serializable {
     private Interface routerInterface;
     private String connectionType = "";
     private int hopCount;
-    private Area areaId;
+    
     private int cost;
     //Added
     public String name;
     public List<Vertex> sp=new LinkedList<>();
     public Integer d = Integer.MAX_VALUE;
 	public Map<Vertex,Integer> adj = new HashMap<>();
+	private String areaId;
 	//Added 
 
     public Entry(String destinationNetwork, String mask, String nextHopAddress, int hopCount, int cost) {
@@ -80,7 +81,7 @@ public class Entry implements Serializable {
     }
     
     public void setArea(String area) {
-        this.areaId = new Area(area);
+        this.areaId = area;
     }    
 
     public SubnetMask getMask() {
@@ -95,7 +96,7 @@ public class Entry implements Serializable {
         return nextHopAddress;
     }
     
-    public Area getArea() {
+    public String getArea() {
         return areaId;
     }
     

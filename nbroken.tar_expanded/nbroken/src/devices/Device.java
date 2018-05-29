@@ -213,18 +213,26 @@ public class Device implements Serializable {
     public Image getImage() {
         return image;
     }
-
+    
+    public void setAdj(Map m) {
+    	this.adj = m;
+    }
+    
     public void addToAdj(Device d, Integer cost) {
     	if(this.adj != null) {
     		this.adj.put(d, cost);
     		System.out.println("SAVED");
     	}
     	System.out.println("ADJ CONTENTS");
-    	System.out.println("COUNT" + this.adj.size());
+    	//System.out.println("COUNT" + this.adj.size());
     	for(Device d1: this.adj.keySet()) {
     		System.out.println(d1.getName());
     	}
     }
+    
+    public void deleteToAdj(Device d) {
+    	adj.remove(d);
+    	}
     
     public boolean contains(Point point, Device device, JComponent observer) {
         Point location = getLocation();

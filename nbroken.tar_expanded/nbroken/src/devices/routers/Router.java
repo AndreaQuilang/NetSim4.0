@@ -1,7 +1,7 @@
 package devices.routers;
 
 import devices.Device;
-import devices.addresses.Area;
+
 import devices.addresses.IPAddress;
 import devices.addresses.SubnetMask;
 

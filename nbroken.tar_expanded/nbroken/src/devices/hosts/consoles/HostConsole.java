@@ -15,6 +15,7 @@ import devices.interfaces.Interface;
 import platform.gui.Graph;
 import platform.gui.MainFrame;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.StringTokenizer;
 
@@ -152,28 +153,38 @@ public class HostConsole extends Console {
                             StringBuffer extras = new StringBuffer();
                             int extrasPosition = getNextPosition(tokens, extras);
                             cursorPosition += (arg1.length() + extrasPosition);
-
+                            
+                          
                             if (extras.length() == 0) {
                                 IPAddress destination = new IPAddress(arg1.toString());
                                 
                                 Device dis = getDevice();
                                 Graph graph = new Graph();
                                 int ctr = 0;
-                                for(Device d : dis.getDevices()) {
+                                
+                                for(Device d : getDevice().getDevices()) {
+                                	d.setAdj(new HashMap<Device, Integer>());
                                 	ctr++;
+                                	
                                 	for(Interface in: d.getClosedInterfaces()) {
-                                		System.out.println(d.toString() +"-> " +in.getName());
                                 		
+                                		if(d.DEVICES.contains(in.getConnectedInterface().getDevice())) {
                                 			d.addToAdj(in.getConnectedInterface().getDevice(), in.getCost());
-                                    		//added to adj
+                                			
+                                //			System.out.println("BEING ADDED TO ADJ OF:" + d.getName());
+                                	//		System.out.println(in.getConnectedInterface().getDevice().getName());
+                                			//added to adj
+                                			//added to adj
+                                		}
                                 		
                                 	}                              	
                                 	graph.add(d); //added to graph
                                 }
                                 
                                 LinkedList<Device> sp;
+                              
                                 sp = graph.dijkstra(dis);
-                                showTraceRoute(sp, graph.getV());
+                                showTraceRoute(sp, graph.getV(), arg1.toString());
                                 
                                 
                               

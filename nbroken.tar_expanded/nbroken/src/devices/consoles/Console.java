@@ -1986,22 +1986,28 @@ public boolean Tracert(){
     	if (marker==2)textArea.append("\nDestination Host Unreachable.\n");
   }
     
-    public void showTraceRoute(LinkedList<Device>sp, Set<Device> set) {
+    public void showTraceRoute(LinkedList<Device>sp, Set<Device> set, String destination) {
         // String add = address.toString()
+    	System.out.println(destination);
     	if(sp != null) {
     		textArea.append("\n");
     		for (Device u: set){
-  		       textArea.append(u+": ");
-  		       int ctr = 0;
-  		       for (Device d: u.sp) {
-  		          textArea.append(d.getName()+ " ");
-  		          if(ctr != u.sp.size()-1) {
-  		        	 textArea.append("->" + " ");
-  		          }
-  		          ctr++;
-  		       }
-  		     textArea.append("\n");
-  		    }
+    			for(Interface i : u.getClosedInterfaces()) {
+    				if(i.getIPAddress().toString().equals(destination)){					
+    					textArea.append(u+": ");
+    					 int ctr = 0;
+    		  		       for (Device d: u.sp) {
+    		  		          textArea.append(d.getName()+ " ");
+    		  		          if(ctr != u.sp.size()-1) {
+    		  		        	 textArea.append("->" + " ");
+    		  		          }
+    		  		          ctr++;
+    		  		       }
+    		  		     textArea.append("\n");
+    				}
+    				
+    			}
+    		}
     	}else {
     		textArea.append("\nDestination Host Unreachable.\n");
     	} 	

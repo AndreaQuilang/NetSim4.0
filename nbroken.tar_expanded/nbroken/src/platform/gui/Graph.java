@@ -23,6 +23,7 @@ public class Graph implements Serializable{
 	public void add(Device d) {
 		// TODO Auto-generated method stub
 		v.add(d);
+		System.out.println(d.getName());
 	
 	}
 	
@@ -45,7 +46,7 @@ public class Graph implements Serializable{
 		 notDone.add(source);
 		 LinkedList<Device> sp = new LinkedList<>();
 		 while (notDone.size() != 0) {
-			 System.out.println("iterate");
+			// System.out.println("iterate");
 		       Device u = notDone.poll();
 		       for (Map.Entry<Device, Integer> pair: u.getAdj().entrySet()) {
 		          Device v = pair.getKey();
@@ -53,9 +54,9 @@ public class Graph implements Serializable{
 		          if (!done.contains(v)) {
 		        	  
 		        	  System.out.println(" device v: "+ pair.getKey().getName());
-		        	  System.out.println("V:" + v.getD());
+		        	  //System.out.println("V:" + v.getD());
 		        	  System.out.println(" device u: "+ u.getName());
-		        	  System.out.println("U:" + u.getD());
+		        	  //System.out.println("U:" + u.getD());
 		             if (u.getD() + d < v.getD()) {
 		                v.setD(u.getD() + v.getD());
 		                sp = new LinkedList<>(u.sp);

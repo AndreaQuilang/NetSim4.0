@@ -1,6 +1,6 @@
 package devices.routers;
 
-import devices.addresses.Area;
+
 import devices.interfaces.FastEthernet;
 import devices.interfaces.Interface;
 import devices.interfaces.Serial;

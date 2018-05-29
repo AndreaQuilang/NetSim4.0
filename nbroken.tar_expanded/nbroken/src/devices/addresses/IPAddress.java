@@ -187,22 +187,4 @@ public class IPAddress extends Address {
         return networkAddress.toString();
     }
 
-	public static Object getNetworkAddress(IPAddress address, SubnetMask mask, Area area) {
-		// TODO Auto-generated method stub
-		int[] addressQuartet = address.getAddress();
-        int[] maskQuartet = mask.getMaskArray();
-        int areaId = area.getAreaID();
-        
-        StringBuffer networkAddress = new StringBuffer();
-
-        for (int i = 0; i < addressQuartet.length; i++) {
-            networkAddress.append(addressQuartet[i] & maskQuartet[i] & areaId);
-
-            if (i != (addressQuartet.length - 1)) {
-                networkAddress.append(".");
-            }
-        }
-
-        return networkAddress.toString();
-	}
 }
